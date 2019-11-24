@@ -1,0 +1,12 @@
+config
+kubeconfig
+**/*.json
+**/*.pem
+**/*.csr
+**/*.kubeconfig
+**/*.yaml
+**/*.local
+encconfig/key
+terraform/terraform.tfstate*
+terraform/.terraform
+

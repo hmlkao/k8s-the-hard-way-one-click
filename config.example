@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+declare -A intips
+declare -A extips
+
+# Kubernetes version
+k8s_ver=1.16.3
+
+# Username used for remote access
+user=
+
+# Hostnames of control nodes
+controllers=(
+  "control-01"
+  "control-02"
+  "control-03"
+)
+# Hostnames of worker nodes
+workers=(
+  "worker-01"
+  "worker-02"
+)
+
+# Internal node IPs assigned to hostnames
+intips=(
+  ["control-01"]="10.0.1.11"
+  ["control-02"]="10.0.2.11"
+  ["control-03"]="10.0.2.12"
+  ["worker-01"]="10.0.1.101"
+  ["worker-02"]="10.0.2.101"
+)
+
+# External node IPs assigned to hostnames
+# Can be the same as internal IPs if you are use closed network
+extips=(
+  ["control-01"]="10.0.1.11"
+  ["control-02"]="10.0.2.11"
+  ["control-03"]="10.0.2.12"
+  ["worker-01"]="10.0.1.101"
+  ["worker-02"]="10.0.2.101"
+)
+
+# Loadbalanced IP over all controllers
+# Can be one of external IPs if you don't have configured loadbalancer
+kubeapi_ip=${extips[${controllers[0]}]}
+
+# Service addresses
+service_cluster_ip_range=10.32.0.0/24
+
+# Cluster IPs
+cluster_cidr=10.200.0.0/16
