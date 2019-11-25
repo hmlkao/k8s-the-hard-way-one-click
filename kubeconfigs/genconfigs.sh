@@ -139,7 +139,7 @@ for instance in "${workers[@]}"; do
     "kubelet/${instance}.kubeconfig" \
     "kube-proxy/kube-proxy.kubeconfig" \
     "${user}@${ip}:~/"
-  ssh "${user}@${ip}" "sudo mv *.kubeconfig /opt/kubernetes/"
+  ssh "${user}@${ip}" "sudo mv -v *.kubeconfig /opt/kubernetes/"
 done
 
 
@@ -153,5 +153,5 @@ for instance in "${controllers[@]}"; do
     "kube-scheduler/kube-scheduler.kubeconfig" \
     "kube-cm/kube-controller-manager.kubeconfig" \
     "${user}@${ip}:~/"
-  ssh "${user}@${ip}" "sudo mv *.kubeconfig /opt/kubernetes/"
+  ssh "${user}@${ip}" "sudo mv -v *.kubeconfig /opt/kubernetes/"
 done

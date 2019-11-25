@@ -25,8 +25,6 @@ EOF
 for instance in "${controllers[@]}"; do
   ip=${intips[$instance]}
   ssh "${user}@${ip}" sudo mkdir -p /opt/kubernetes
-  scp \
-    encryption-config.yaml \
-    "${user}@${ip}:~/"
-  ssh "${user}@${ip}" "sudo mv encryption-config.yaml /opt/kubernetes/"
+  scp encryption-config.yaml "${user}@${ip}:./"
+  ssh "${user}@${ip}" sudo mv -v encryption-config.yaml /opt/kubernetes/
 done
