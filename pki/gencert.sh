@@ -5,81 +5,81 @@
 #################### CERTIFICATES ########################
 
 # Generate config for cfssl
-# cat > ca-config.json <<EOF
-# {
-#     "signing": {
-#         "default": {
-#             "expiry": "8760h"
-#         },
-#         "profiles": {
-#             "kubernetes": {
-#                 "usages": [
-#                     "signing",
-#                     "key encipherment",
-#                     "server auth",
-#                     "client auth"
-#                 ],
-#                 "expiry": "8760h"
-#             }
-#         }
-#     }
-# }
-# EOF
+cat > ca-config.json <<EOF
+{
+    "signing": {
+        "default": {
+            "expiry": "8760h"
+        },
+        "profiles": {
+            "kubernetes": {
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth",
+                    "client auth"
+                ],
+                "expiry": "8760h"
+            }
+        }
+    }
+}
+EOF
 
 
 
 # Generate k8s CA cert
-# mkdir -p k8s-ca
-# cat > k8s-ca/ca-csr.json <<EOF
-# {
-#   "CN": "Ondruv K8s",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   }
-# }
-# EOF
-# cfssl gencert -initca k8s-ca/ca-csr.json | cfssljson -bare k8s-ca/ca
+mkdir -p k8s-ca
+cat > k8s-ca/ca-csr.json <<EOF
+{
+  "CN": "Ondruv K8s",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  }
+}
+EOF
+cfssl gencert -initca k8s-ca/ca-csr.json | cfssljson -bare k8s-ca/ca
 
 
 
 # Generate k8s client cert for 'admin' user
-# mkdir -p k8s-client-admin
-# cat > k8s-client-admin/admin-csr.json <<EOF
-# {
-#   "CN": "admin",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   },
-#   "names": [
-#     {
-#       "O": "system:masters"
-#     }
-#   ]
-# }
-# EOF
-# cfssl gencert -ca=k8s-ca/ca.pem -ca-key=k8s-ca/ca-key.pem -config=ca-config.json -profile=kubernetes k8s-client-admin/admin-csr.json | cfssljson -bare k8s-client-admin/admin
+mkdir -p k8s-client-admin
+cat > k8s-client-admin/admin-csr.json <<EOF
+{
+  "CN": "admin",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "O": "system:masters"
+    }
+  ]
+}
+EOF
+cfssl gencert -ca=k8s-ca/ca.pem -ca-key=k8s-ca/ca-key.pem -config=ca-config.json -profile=kubernetes k8s-client-admin/admin-csr.json | cfssljson -bare k8s-client-admin/admin
 
 
 
 # Generate k8s client cert for 'ondra' user
-# mkdir -p k8s-client-ondra
-# cat > k8s-client-ondra/ondra-csr.json <<EOF
-# {
-#   "CN": "ondra",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   },
-#   "names": [
-#     {
-#       "O": "system:masters"
-#     }
-#   ]
-# }
-# EOF
-# cfssl gencert -ca=k8s-ca/ca.pem -ca-key=k8s-ca/ca-key.pem -config=ca-config.json -profile=kubernetes k8s-client-ondra/ondra-csr.json | cfssljson -bare k8s-client-ondra/ondra
+mkdir -p k8s-client-ondra
+cat > k8s-client-ondra/ondra-csr.json <<EOF
+{
+  "CN": "ondra",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "O": "system:masters"
+    }
+  ]
+}
+EOF
+cfssl gencert -ca=k8s-ca/ca.pem -ca-key=k8s-ca/ca-key.pem -config=ca-config.json -profile=kubernetes k8s-client-ondra/ondra-csr.json | cfssljson -bare k8s-client-ondra/ondra
 
 
 
@@ -115,80 +115,80 @@ done
 
 
 # Generate Controller Manager cert
-# mkdir -p "k8s-client-cm"
-# cat > k8s-client-cm/kube-controller-manager-csr.json <<EOF
-# {
-#   "CN": "system:kube-controller-manager",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   },
-#   "names": [
-#     {
-#       "O": "system:kube-controller-manager"
-#     }
-#   ]
-# }
-# EOF
-#
-# cfssl gencert \
-#   -ca=k8s-ca/ca.pem \
-#   -ca-key=k8s-ca/ca-key.pem \
-#   -config=ca-config.json \
-#   -profile=kubernetes \
-#   k8s-client-cm/kube-controller-manager-csr.json | cfssljson -bare k8s-client-cm/kube-controller-manager
+mkdir -p "k8s-client-cm"
+cat > k8s-client-cm/kube-controller-manager-csr.json <<EOF
+{
+  "CN": "system:kube-controller-manager",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "O": "system:kube-controller-manager"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=k8s-ca/ca.pem \
+  -ca-key=k8s-ca/ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  k8s-client-cm/kube-controller-manager-csr.json | cfssljson -bare k8s-client-cm/kube-controller-manager
 
 
 
 # Generate Kube Proxy cert
-# mkdir -p "k8s-client-proxy"
-# cat > k8s-client-proxy/kube-proxy-csr.json <<EOF
-# {
-#   "CN": "system:kube-proxy",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   },
-#   "names": [
-#     {
-#       "O": "system:node-proxier"
-#     }
-#   ]
-# }
-# EOF
-#
-# cfssl gencert \
-#   -ca=k8s-ca/ca.pem \
-#   -ca-key=k8s-ca/ca-key.pem \
-#   -config=ca-config.json \
-#   -profile=kubernetes \
-#   k8s-client-proxy/kube-proxy-csr.json | cfssljson -bare k8s-client-proxy/kube-proxy
+mkdir -p "k8s-client-proxy"
+cat > k8s-client-proxy/kube-proxy-csr.json <<EOF
+{
+  "CN": "system:kube-proxy",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "O": "system:node-proxier"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=k8s-ca/ca.pem \
+  -ca-key=k8s-ca/ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  k8s-client-proxy/kube-proxy-csr.json | cfssljson -bare k8s-client-proxy/kube-proxy
 
 
 
 # Generate Kube Scheduler cert
-# mkdir -p k8s-client-ks
-# cat > k8s-client-ks/kube-scheduler-csr.json <<EOF
-# {
-#   "CN": "system:kube-scheduler",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   },
-#   "names": [
-#     {
-#       "O": "system:kube-scheduler"
-#     }
-#   ]
-# }
-# EOF
-#
-# cfssl gencert \
-#   -ca=k8s-ca/ca.pem \
-#   -ca-key=k8s-ca/ca-key.pem \
-#   -config=ca-config.json \
-#   -profile=kubernetes \
-#   k8s-client-ks/kube-scheduler-csr.json | cfssljson -bare k8s-client-ks/kube-scheduler
+mkdir -p k8s-client-ks
+cat > k8s-client-ks/kube-scheduler-csr.json <<EOF
+{
+  "CN": "system:kube-scheduler",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "O": "system:kube-scheduler"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=k8s-ca/ca.pem \
+  -ca-key=k8s-ca/ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  k8s-client-ks/kube-scheduler-csr.json | cfssljson -bare k8s-client-ks/kube-scheduler
 
 
 
@@ -223,39 +223,39 @@ cfssl gencert \
 
 
 # Generate Service account cert
-# mkdir -p k8s-client-sa
-# cat > k8s-client-sa/service-account-csr.json <<EOF
-# {
-#   "CN": "service-accounts",
-#   "key": {
-#     "algo": "rsa",
-#     "size": 2048
-#   }
-# }
-# EOF
+mkdir -p k8s-client-sa
+cat > k8s-client-sa/service-account-csr.json <<EOF
+{
+  "CN": "service-accounts",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  }
+}
+EOF
 
-# cfssl gencert \
-#   -ca=k8s-ca/ca.pem \
-#   -ca-key=k8s-ca/ca-key.pem \
-#   -config=ca-config.json \
-#   -profile=kubernetes \
-#   k8s-client-sa/service-account-csr.json | cfssljson -bare k8s-client-sa/service-account
+cfssl gencert \
+  -ca=k8s-ca/ca.pem \
+  -ca-key=k8s-ca/ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  k8s-client-sa/service-account-csr.json | cfssljson -bare k8s-client-sa/service-account
 
 
 
 ######################### CERTS DEPLOY ##############################
 
 # Deploy certs to workers
-# for instance in "${workers[@]}"; do
-#   ip=${intips[$instance]}
-#   ssh "${user}@${ip}" sudo mkdir -p /opt/kubernetes/pki
-#   scp \
-#     "k8s-ca/ca.pem" \
-#     "k8s-client-${instance}/${instance}.pem" \
-#     "k8s-client-${instance}/${instance}-key.pem" \
-#     "${user}@${ip}:~/"
-#   ssh "${user}@${ip}" "sudo mv *.pem /opt/kubernetes/pki/"
-# done
+for instance in "${workers[@]}"; do
+  ip=${intips[$instance]}
+  ssh "${user}@${ip}" sudo mkdir -p /opt/kubernetes/pki
+  scp \
+    "k8s-ca/ca.pem" \
+    "k8s-client-${instance}/${instance}.pem" \
+    "k8s-client-${instance}/${instance}-key.pem" \
+    "${user}@${ip}:~/"
+  ssh "${user}@${ip}" "sudo mv *.pem /opt/kubernetes/pki/"
+done
 
 
 

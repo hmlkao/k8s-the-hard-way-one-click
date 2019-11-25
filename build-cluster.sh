@@ -3,58 +3,58 @@ set -euo pipefail
 IFS=$'/n/t'
 
 # Create infrastructure
-# (
-#   cd terraform
-#   terraform apply
-# )
+(
+  cd terraform
+  terraform apply
+)
 
 # Create certificates for all components
-# (
-#   cd pki
-#   ./gencert.sh
-# )
+(
+  cd pki
+  ./gencert.sh
+)
 
 # Create kubeconfigs for all components
-# (
-#   cd kubeconfigs
-#   ./genconfigs.sh
-# )
+(
+  cd kubeconfigs
+  ./genconfigs.sh
+)
 
-# Create
-# (
-#   cd encconfig
-#   ./genenc.sh
-# )
+# Create init key
+(
+  cd encconfig
+  ./genenc.sh
+)
 
 # Bootstrap ETCD
-# (
-#   cd etcd
-#   ./boot-etcd.sh
-# )
+(
+  cd etcd
+  ./boot-etcd.sh
+)
 
 # Bootstrap control plane components
-# (
-#   cd control-plane
-#   ./control-plane.sh
-# )
+(
+  cd control-plane
+  ./control-plane.sh
+)
 
 # Make operational healtz check
-# (
-#   cd health-check
-#   ./health-check.sh
-# )
+(
+  cd health-check
+  ./health-check.sh
+)
 
 # RBAC for Kubelet Authorization
-# (
-#   cd kubelet-rbac
-#   ./kubelet-rbac.sh
-# )
+(
+  cd kubelet-rbac
+  ./kubelet-rbac.sh
+)
 
 # Bootstrap worker components
-# (
-#   cd workers
-#   ./workers.sh
-# )
+(
+  cd workers
+  ./workers.sh
+)
 
 # Generate kubeconfig file
 . config
