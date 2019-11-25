@@ -57,7 +57,8 @@ EOF
   ssh "${user}@${ip}" sudo mv etcd.service /etc/systemd/system/etcd.service
   ssh "${user}@${ip}" sudo systemctl daemon-reload
   ssh "${user}@${ip}" sudo systemctl enable etcd
-  ssh "${user}@${ip}" sudo systemctl start etcd
+  # ETCD will not start if there is no other cluster members, run it in background
+  ssh "${user}@${ip}" "sh -c 'nohup sudo systemctl restart etcd 2>&1 1>/dev/null &'"
 done
 
 # Wait for all ETCD members boot up

@@ -3,10 +3,10 @@ set -euo pipefail
 IFS=$'/n/t'
 
 # Create infrastructure
-(
-  cd terraform
-  terraform apply
-)
+# (
+#   cd terraform
+#   terraform apply
+# )
 
 # Create certificates for all components
 (
