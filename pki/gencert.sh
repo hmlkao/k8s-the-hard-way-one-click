@@ -254,7 +254,7 @@ for instance in "${workers[@]}"; do
     "k8s-client-${instance}/${instance}.pem" \
     "k8s-client-${instance}/${instance}-key.pem" \
     "${user}@${ip}:~/"
-  ssh "${user}@${ip}" "sudo mv *.pem /opt/kubernetes/pki/"
+  ssh "${user}@${ip}" "sudo mv -v *.pem /opt/kubernetes/pki/"
 done
 
 
@@ -271,5 +271,5 @@ for instance in "${controllers[@]}"; do
     "k8s-client-sa/service-account.pem" \
     "k8s-client-sa/service-account-key.pem" \
     "${user}@${ip}:~/"
-  ssh "${user}@${ip}" "sudo mv *.pem /opt/kubernetes/pki/"
+  ssh "${user}@${ip}" "sudo mv -v *.pem /opt/kubernetes/pki/"
 done

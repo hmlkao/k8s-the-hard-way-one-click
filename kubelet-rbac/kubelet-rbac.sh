@@ -34,7 +34,6 @@ rules:
       - "*"
 EOF
 scp cluster-role.yaml "${user}@${extips[${controllers[0]}]}:/tmp/"
-rm -v cluster-role.yaml
 ssh "${user}@${extips[${controllers[0]}]}" kubectl apply --kubeconfig /opt/kubernetes/admin.kubeconfig -f /tmp/cluster-role.yaml
 
 
@@ -56,5 +55,4 @@ subjects:
     name: kubernetes
 EOF
 scp cluster-role-binding.yaml "${user}@${extips[${controllers[0]}]}:/tmp/"
-rm -v cluster-role-binding.yaml
 ssh "${user}@${extips[${controllers[0]}]}" kubectl apply --kubeconfig /opt/kubernetes/admin.kubeconfig -f /tmp/cluster-role-binding.yaml

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 . ../config
 
@@ -17,8 +17,8 @@ for instance in "${controllers[@]}"; do
   ssh "${user}@${ip}" wget -q --show-progress --https-only --timestamping \
     "https://github.com/etcd-io/etcd/releases/download/v${etcd_ver}/etcd-v${etcd_ver}-linux-amd64.tar.gz"
   ssh "${user}@${ip}" tar -xf "etcd-v${etcd_ver}-linux-amd64.tar.gz"
-  ssh "${user}@${ip}" sudo mv "etcd-v${etcd_ver}-linux-amd64/etcd"* /usr/local/bin/
-  ssh "${user}@${ip}" sudo mkdir -p /etc/etcd /var/lib/etcd
+  ssh "${user}@${ip}" sudo mv -v "etcd-v${etcd_ver}-linux-amd64/etcd"* /usr/local/bin/
+  ssh "${user}@${ip}" sudo mkdir -pv /etc/etcd /var/lib/etcd
 
   cat > "./etcd-${instance}.service" << EOF
 [Unit]
@@ -26,7 +26,7 @@ Description=etcd
 Documentation=https://github.com/coreos
 
 [Service]
-Type=notify
+Type=simple
 ExecStart=/usr/local/bin/etcd \\
   --name ${instance} \\
   --cert-file=/opt/kubernetes/pki/api-server.pem \\
@@ -52,17 +52,24 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
   scp "./etcd-${instance}.service" "${user}@${ip}":etcd.service
-  rm -v "./etcd-${instance}.service"
 
-  ssh "${user}@${ip}" sudo mv etcd.service /etc/systemd/system/etcd.service
+  ssh "${user}@${ip}" sudo mv -v etcd.service /etc/systemd/system/etcd.service
   ssh "${user}@${ip}" sudo systemctl daemon-reload
   ssh "${user}@${ip}" sudo systemctl enable etcd
-  # ETCD will not start if there is no other cluster members, run it in background
-  ssh "${user}@${ip}" "sh -c 'nohup sudo systemctl restart etcd 2>&1 1>/dev/null &'"
+  ssh "${user}@${ip}" sudo reboot
 done
 
+# Run etcd service after all cluster member are prepared to run
+# otherwise service can end in dead state
+# DOESN'T WORK I have to reboot OS
+# for instance in "${controllers[@]}"; do
+#   ip=${intips[$instance]}
+#   # ETCD will not start if there is no other cluster members, run it in background
+#   ssh "${user}@${ip}" sudo -b nohup bash -c "systemctl restart etcd </dev/null 2>&1 1>/dev/null"
+# done
+
 # Wait for all ETCD members boot up
-sleep 3
+sleep 30
 
 ssh "${user}@${ip}" sudo ETCDCTL_API=3 etcdctl member list \
   --endpoints=https://127.0.0.1:2379 \
