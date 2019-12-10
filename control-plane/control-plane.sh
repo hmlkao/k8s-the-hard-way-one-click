@@ -85,7 +85,6 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
   scp "kube-apiserver-${instance}.service" "${user}@${ip}":kube-apiserver.service
-  rm -v "kube-apiserver-${instance}.service"
 
   # Run service
   ssh "${user}@${ip}" sudo mv -v kube-apiserver.service /etc/systemd/system/kube-apiserver.service
